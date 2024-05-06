@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<catalog prefer="public" xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+    <uri id="User Entered Import Resolution" name="http://www.inf.ufrgs.br/phi-group/ontologies/RParts.owl" uri="file:/home/nrg-user/nrg/catkin_ws/src/skiros2/skiros2/owl/skiros.owl"/>
+    <uri id="Imports Wizard Entry" name="http://rvmi.aau.dk/ontologies/skiros.owl" uri="file:/home/nrg-user/nrg/catkin_ws/src/skiros2/skiros2/owl/skiros.owl"/>
+    <uri id="Imports Wizard Entry" name="http://rvmi.aau.dk/ontologies/turtlebot.owl" uri="file:/home/nrg-user/nrg/catkin_ws/src/skiros2_examples/owl/turtlesim_robot_description.owl"/>
+    <group id="Folder Repository, directory=, recursive=true, Auto-Update=true, version=2" prefer="public" xml:base="">
+        <uri id="Automatically generated entry, Timestamp=1712941058344" name="http://rvmi.aau.dk/ontologies/test_bot.owl" uri="test_bot_robot_description.owl"/>
+    </group>
+</catalog>
