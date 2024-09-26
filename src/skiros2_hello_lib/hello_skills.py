@@ -17,16 +17,8 @@ class MovePrimitive(SkillDescription):
     def createDescription(self):
         self.addParam("Robot", Element("cora:Robot"), ParamTypes.Required)
         self.addParam("Target1", Element("skiros:TransformationPose"), ParamTypes.Required)
-
-class Drive(SkillDescription):
-    def createDescription(self):
-        self.addParam("Robot", Element("cora:Robot"), ParamTypes.Required)
-        #self.addParam("StartLocation", Element("skiros:Location"), ParamTypes.Inferred)
-        self.addParam("Target1", Element("skiros:TransformationPose"), ParamTypes.Inferred)
-        #self.addPreCondition(self.getRelationCond("RobotAt", "skiros:at", "Robot", "StartLocation", True))
         self.addPreCondition(self.getPropCond("TargetExists", "skiros:PositionX", "Target1", "=", 5.0, True))
-        #self.addPostCondition(self.getRelationCond("NoRobotAt", "skiros:at", "Robot", "StartLocation", False))
-        self.addPostCondition(self.getRelationCond("RobotAt", "skiros:at", "Robot", "Target1", True))
+        self.addPostCondition(self.getPropCond("RobotAtTarget", "skiros:PositionX", "Robot", "=", 5.0, True))
 
 #################################################################################
 # Implementations
@@ -84,19 +76,19 @@ class move_primitive(PrimitiveBase):
 
     def onStart(self):
         """Called just before 1st execute"""
-        self.pos = 0.0
+        self.temp_pos = 0.0
         return True
 
     def execute(self):
         """ Main execution function. Should return with either: self.fail, self.step or self.success """
-        self.pos += 1.0
+        self.temp_pos += 1.0
         bot = self.params["Robot"].value
         bot_pos = bot.getData(":Position")[0]
         target_pos = self.params["Target1"].value.getData(":Position")[0]
         rospy.loginfo(f"Robot pos {bot_pos} target pos {target_pos}")
         if bot_pos != target_pos:
             rospy.loginfo("Changing")
-            bot.setData(":Position", [self.pos, 0.0, 0.0])
+            bot.setData(":Position", [self.temp_pos, 0.0, 0.0])
             self.params["Robot"].value = bot
             return self.step("Step")
         else:
@@ -105,19 +97,3 @@ class move_primitive(PrimitiveBase):
     def onEnd(self):
         """Called just after last execute OR preemption"""
         return True
-
-class drive(SkillBase):
-    def createDescription(self):
-        self.setDescription(Drive(), self.__class__.__name__)
-
-    def set_at(self, src, dst, state):
-      return self.skill("WmSetRelation", "wm_set_relation",
-          remap={'Dst': dst},
-          specify={'Src': self.params[src].value, 'Relation': 'skiros:at', 'RelationState': state})
-
-    def expand(self, skill):
-        skill(
-            self.skill("MovePrimitive", "move_primitive", specify={"Robot": self.params["Robot"].value, "Target1": self.params["Target1"].value}),
-            self.set_at("Robot", "Target1", True),
-            #self.set_at("Robot", "StartLocation", False)
-        )
