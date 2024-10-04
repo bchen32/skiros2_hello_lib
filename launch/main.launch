@@ -1,5 +1,5 @@
 <launch>
-  <arg name="skill_list" default="[scan_primitive, move_primitive, task_plan]"/>
+  <arg name="skill_list" default="[scan_primitive, move_primitive, drive, task_plan]"/>
   <arg name="debug" default="false"/>
   <arg name="robot_ontology_prefix" default="test_bot"/>
   <arg name="robot_name" default="test_bot_robot"/>
