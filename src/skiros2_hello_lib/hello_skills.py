@@ -10,23 +10,32 @@ import rospy
 
 class ScanPrimitive(SkillDescription):
     def createDescription(self):
-        self.addParam("Target", Element("skiros:TransformationPose"), ParamTypes.Optional)
-        self.addPostCondition(self.getHasPropCond("HasPositionX", "skiros:PositionX", "Target", True))
+        self.addParam("TargetLoc", Element("skiros:Location"), ParamTypes.Required)
+        self.addParam("TargetPose", Element("skiros:TransformationPose"), ParamTypes.Optional)
 
 class MovePrimitive(SkillDescription):
     def createDescription(self):
         self.addParam("Robot", Element("cora:Robot"), ParamTypes.Required)
-        self.addParam("Target1", Element("skiros:TransformationPose"), ParamTypes.Required)
+        self.addParam("TargetPose", Element("skiros:TransformationPose"), ParamTypes.Required)
+
+class Look(SkillDescription):
+    def createDescription(self):
+        self.addParam("TargetLoc", Element("skiros:Location"), ParamTypes.Required)
+        self.addParam("TargetPose", Element("skiros:TransformationPose"), ParamTypes.Optional)
+        self.addPostCondition(self.getHasPropCond("HasPositionX", "skiros:PositionX", "TargetPose", True))
+        self.addPostCondition(self.getRelationCond("TargetPoseAtLocPost", "skiros:at", "TargetPose", "TargetLoc", True))
 
 class Drive(SkillDescription):
     def createDescription(self):
         self.addParam("Robot", Element("cora:Robot"), ParamTypes.Required)
-        #self.addParam("StartLocation", Element("skiros:Location"), ParamTypes.Inferred)
-        self.addParam("Target1", Element("skiros:TransformationPose"), ParamTypes.Inferred)
-        #self.addPreCondition(self.getRelationCond("RobotAt", "skiros:at", "Robot", "StartLocation", True))
-        self.addPreCondition(self.getPropCond("TargetExists", "skiros:PositionX", "Target1", "=", 5.0, True))
-        #self.addPostCondition(self.getRelationCond("NoRobotAt", "skiros:at", "Robot", "StartLocation", False))
-        self.addPostCondition(self.getRelationCond("RobotAt", "skiros:at", "Robot", "Target1", True))
+        self.addParam("StartLocation", Element("skiros:Location"), ParamTypes.Inferred)
+        self.addParam("TargetPose", Element("skiros:TransformationPose"), ParamTypes.Required)
+        self.addParam("TargetLoc", Element("skiros:Location"), ParamTypes.Required)
+        self.addPreCondition(self.getRelationCond("RobotAtPre", "skiros:at", "Robot", "StartLocation", True))
+        self.addPreCondition(self.getPropCond("TargetExists", "skiros:PositionX", "TargetPose", "=", 5.0, True))
+        self.addPreCondition(self.getRelationCond("TargetPoseAtLocPre", "skiros:at", "TargetPose", "TargetLoc", True))
+        self.addPostCondition(self.getRelationCond("NoRobotAt", "skiros:at", "Robot", "StartLocation", False))
+        self.addPostCondition(self.getRelationCond("RobotAtPost", "skiros:at", "Robot", "TargetLoc", True))
 
 #################################################################################
 # Implementations
@@ -57,7 +66,7 @@ class scan_primitive(PrimitiveBase):
         if self._progress_code<10:
             return self.step("Step")
         else:
-            pose = self.params["Target"].value
+            pose = self.params["TargetPose"].value
             pose.setData(":Position", [5.0 , 0.0, 0.0])
             self.wmi.add_element(pose)
             return self.success("Done")
@@ -92,7 +101,7 @@ class move_primitive(PrimitiveBase):
         self.pos += 1.0
         bot = self.params["Robot"].value
         bot_pos = bot.getData(":Position")[0]
-        target_pos = self.params["Target1"].value.getData(":Position")[0]
+        target_pos = self.params["TargetPose"].value.getData(":Position")[0]
         rospy.loginfo(f"Robot pos {bot_pos} target pos {target_pos}")
         if bot_pos != target_pos:
             rospy.loginfo("Changing")
@@ -106,6 +115,21 @@ class move_primitive(PrimitiveBase):
         """Called just after last execute OR preemption"""
         return True
 
+class look(SkillBase):
+    def createDescription(self):
+        self.setDescription(Look(), self.__class__.__name__)
+
+    def set_at(self, src, dst, state):
+      return self.skill("WmSetRelation", "wm_set_relation",
+          remap={'Dst': dst},
+          specify={'Src': self.params[src].value, 'Relation': 'skiros:at', 'RelationState': state})
+
+    def expand(self, skill):
+        skill(
+            self.skill("ScanPrimitive", "scan_primitive", specify={"TargetLoc": self.params["TargetLoc"].value, "TargetPose": self.params["TargetPose"].value}),
+            self.set_at("TargetPose", "TargetLoc", True)
+        )
+
 class drive(SkillBase):
     def createDescription(self):
         self.setDescription(Drive(), self.__class__.__name__)
@@ -117,7 +141,7 @@ class drive(SkillBase):
 
     def expand(self, skill):
         skill(
-            self.skill("MovePrimitive", "move_primitive", specify={"Robot": self.params["Robot"].value, "Target1": self.params["Target1"].value}),
-            self.set_at("Robot", "Target1", True),
-            #self.set_at("Robot", "StartLocation", False)
+            self.skill("MovePrimitive", "move_primitive", specify={"Robot": self.params["Robot"].value, "TargetPose": self.params["TargetPose"].value}),
+            self.set_at("Robot", "TargetLoc", True),
+            self.set_at("Robot", "StartLocation", False)
         )
