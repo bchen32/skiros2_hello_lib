@@ -248,12 +248,6 @@ skiros:TransformationPose-46 a skiros:TransformationPose,
 
     skiros:FrameId "skiros:TransformationPose-46"^^xsd:string ;
 
-    skiros:PositionX "0.0"^^xsd:float ;
-
-    skiros:PositionY "0.0"^^xsd:float ;
-
-    skiros:PositionZ "0.0"^^xsd:float ;
-
     skiros:PublishTf true .
 
 cora:Robot-1 a cora:Robot,
