@@ -29,6 +29,9 @@
 skiros:MovePrimitive a owl:class ;
     rdfs:subClassOf skiros:HelloSkills .
 
+skiros:ScanPrimitive a owl:class ;
+    rdfs:subClassOf skiros:HelloSkills .
+
 skiros:Scene-0 a skiros:Scene,
         owl:NamedIndividual ;
     rdfs:label "" ;
@@ -43,39 +46,66 @@ skiros:Scene-0 a skiros:Scene,
     skiros:PositionZ "0.0"^^xsd:float ;
     skiros:contain skiros:Location-17,
         skiros:Location-25,
+        skiros:TransformationPose-46,
         cora:Robot-1 .
 
-skiros:ConditionGenerate-12 a skiros:ConditionGenerate,
+skiros:ConditionGenerate-22 a skiros:ConditionGenerate,
         owl:NamedIndividual ;
-    rdfs:label "HasTarget" ;
+    rdfs:label "HasTargetPose" ;
     skiros:desiredState true ;
-    skiros:hasSubject "Target"^^xsd:string .
+    skiros:hasSubject "TargetPose"^^xsd:string .
 
-skiros:ConditionHasProperty-13 a skiros:ConditionHasProperty,
+skiros:ConditionProperty-23 a skiros:ConditionProperty,
         owl:NamedIndividual ;
-    rdfs:label "HasPositionX" ;
+    rdfs:label "TargetFound" ;
     skiros:appliedOnType "skiros:PositionX"^^xsd:string ;
     skiros:desiredState true ;
-    skiros:hasSubject "Target"^^xsd:string .
+    skiros:desiredValue "5.0"^^xsd:float ;
+    skiros:hasSubject "TargetPose"^^xsd:string ;
+    skiros:operator "="^^xsd:string .
 
-skiros:ConditionProperty-20 a skiros:ConditionProperty,
+skiros:ConditionProperty-32 a skiros:ConditionProperty,
         owl:NamedIndividual ;
     rdfs:label "TargetExists" ;
     skiros:appliedOnType "skiros:PositionX"^^xsd:string ;
     skiros:desiredState true ;
     skiros:desiredValue "5.0"^^xsd:float ;
-    skiros:hasSubject "Target1"^^xsd:string ;
+    skiros:hasSubject "TargetPose"^^xsd:string ;
     skiros:operator "="^^xsd:string .
 
-skiros:ConditionRelation-19 a skiros:ConditionRelation,
+skiros:ConditionRelation-21 a skiros:ConditionRelation,
         owl:NamedIndividual ;
-    rdfs:label "RobotAt" ;
+    rdfs:label "SceneHasTarget" ;
+    skiros:appliedOnType "skiros:contain"^^xsd:string ;
+    skiros:desiredState true ;
+    skiros:hasObject "TargetLoc"^^xsd:string ;
+    skiros:hasSubject "ParentScene"^^xsd:string .
+
+skiros:ConditionRelation-24 a skiros:ConditionRelation,
+        owl:NamedIndividual ;
+    rdfs:label "TargetPoseAtLocPost" ;
+    skiros:appliedOnType "skiros:at"^^xsd:string ;
+    skiros:desiredState true ;
+    skiros:hasObject "TargetLoc"^^xsd:string ;
+    skiros:hasSubject "TargetPose"^^xsd:string .
+
+skiros:ConditionRelation-31 a skiros:ConditionRelation,
+        owl:NamedIndividual ;
+    rdfs:label "RobotAtPre" ;
     skiros:appliedOnType "skiros:at"^^xsd:string ;
     skiros:desiredState true ;
     skiros:hasObject "StartLocation"^^xsd:string ;
     skiros:hasSubject "Robot"^^xsd:string .
 
-skiros:ConditionRelation-21 a skiros:ConditionRelation,
+skiros:ConditionRelation-33 a skiros:ConditionRelation,
+        owl:NamedIndividual ;
+    rdfs:label "TargetPoseAtLocPre" ;
+    skiros:appliedOnType "skiros:at"^^xsd:string ;
+    skiros:desiredState true ;
+    skiros:hasObject "TargetLoc"^^xsd:string ;
+    skiros:hasSubject "TargetPose"^^xsd:string .
+
+skiros:ConditionRelation-34 a skiros:ConditionRelation,
         owl:NamedIndividual ;
     rdfs:label "NoRobotAt" ;
     skiros:appliedOnType "skiros:at"^^xsd:string ;
@@ -83,84 +113,111 @@ skiros:ConditionRelation-21 a skiros:ConditionRelation,
     skiros:hasObject "StartLocation"^^xsd:string ;
     skiros:hasSubject "Robot"^^xsd:string .
 
-skiros:ConditionRelation-22 a skiros:ConditionRelation,
+skiros:ConditionRelation-35 a skiros:ConditionRelation,
         owl:NamedIndividual ;
-    rdfs:label "RobotAt" ;
+    rdfs:label "RobotAtPost" ;
     skiros:appliedOnType "skiros:at"^^xsd:string ;
     skiros:desiredState true ;
-    skiros:hasObject "Target1"^^xsd:string ;
+    skiros:hasObject "TargetLoc"^^xsd:string ;
     skiros:hasSubject "Robot"^^xsd:string .
 
 skiros:Drive a owl:class ;
     rdfs:subClassOf skiros:HelloSkills .
 
-skiros:Drive-14 a skiros:Drive,
+skiros:Drive-26 a skiros:Drive,
         owl:NamedIndividual ;
     rdfs:label "drive" ;
-    skiros:hasParam skiros:Parameter-15,
-        skiros:Parameter-16,
-        skiros:Parameter-18 ;
-    skiros:hasPostCondition skiros:ConditionRelation-21,
-        skiros:ConditionRelation-22 ;
-    skiros:hasPreCondition skiros:ConditionProperty-20,
-        skiros:ConditionRelation-19 .
+    skiros:hasParam skiros:Parameter-27,
+        skiros:Parameter-28,
+        skiros:Parameter-29,
+        skiros:Parameter-30 ;
+    skiros:hasPostCondition skiros:ConditionRelation-34,
+        skiros:ConditionRelation-35 ;
+    skiros:hasPreCondition skiros:ConditionProperty-32,
+        skiros:ConditionRelation-31,
+        skiros:ConditionRelation-33 .
 
 skiros:Location-25 a skiros:Location,
         owl:NamedIndividual ;
     rdfs:label "TargetLocation" .
 
-skiros:Parameter-10 a skiros:Parameter,
+skiros:Look a owl:class ;
+    rdfs:subClassOf skiros:HelloSkills .
+
+skiros:Look-15 a skiros:Look,
         owl:NamedIndividual ;
-    rdfs:label "Target" ;
+    rdfs:label "look" ;
+    skiros:hasParam skiros:Parameter-16,
+        skiros:Parameter-18,
+        skiros:Parameter-19,
+        skiros:Parameter-20 ;
+    skiros:hasPostCondition skiros:ConditionGenerate-22,
+        skiros:ConditionProperty-23,
+        skiros:ConditionRelation-24 ;
+    skiros:hasPreCondition skiros:ConditionRelation-21 .
+
+skiros:Parameter-16 a skiros:Parameter,
+        owl:NamedIndividual ;
+    rdfs:label "TargetLoc" ;
+    skiros:DataType "skiros:Location"^^xsd:string ;
+    skiros:ParameterType 0 ;
+    rdfs:comment ""^^xsd:string .
+
+skiros:Parameter-18 a skiros:Parameter,
+        owl:NamedIndividual ;
+    rdfs:label "TargetPose" ;
     skiros:DataType "skiros:TransformationPose"^^xsd:string ;
     skiros:ParameterType 1 ;
     rdfs:comment ""^^xsd:string .
 
-skiros:Parameter-11 a skiros:Parameter,
+skiros:Parameter-19 a skiros:Parameter,
+        owl:NamedIndividual ;
+    rdfs:label "ParentScene" ;
+    skiros:DataType "skiros:Scene"^^xsd:string ;
+    skiros:ParameterType 0 ;
+    rdfs:comment ""^^xsd:string .
+
+skiros:Parameter-20 a skiros:Parameter,
         owl:NamedIndividual ;
     rdfs:label "Robot" ;
     skiros:DataType "sumo:Agent"^^xsd:string ;
     skiros:ParameterType 2 ;
     rdfs:comment ""^^xsd:string .
 
-skiros:Parameter-15 a skiros:Parameter,
+skiros:Parameter-27 a skiros:Parameter,
         owl:NamedIndividual ;
     rdfs:label "Robot" ;
     skiros:DataType "cora:Robot"^^xsd:string ;
     skiros:ParameterType 0 ;
     rdfs:comment ""^^xsd:string .
 
-skiros:Parameter-16 a skiros:Parameter,
+skiros:Parameter-28 a skiros:Parameter,
         owl:NamedIndividual ;
     rdfs:label "StartLocation" ;
     skiros:DataType "skiros:Location"^^xsd:string ;
     skiros:ParameterType 2 ;
     rdfs:comment ""^^xsd:string .
 
-skiros:Parameter-18 a skiros:Parameter,
+skiros:Parameter-29 a skiros:Parameter,
         owl:NamedIndividual ;
-    rdfs:label "Target1" ;
+    rdfs:label "TargetPose" ;
     skiros:DataType "skiros:TransformationPose"^^xsd:string ;
-    skiros:ParameterType 2 ;
+    skiros:ParameterType 0 ;
     rdfs:comment ""^^xsd:string .
 
-skiros:Parameter-24 a skiros:Parameter,
+skiros:Parameter-30 a skiros:Parameter,
+        owl:NamedIndividual ;
+    rdfs:label "TargetLoc" ;
+    skiros:DataType "skiros:Location"^^xsd:string ;
+    skiros:ParameterType 0 ;
+    rdfs:comment ""^^xsd:string .
+
+skiros:Parameter-37 a skiros:Parameter,
         owl:NamedIndividual ;
     rdfs:label "Robot" ;
     skiros:DataType "sumo:Agent"^^xsd:string ;
     skiros:ParameterType 2 ;
     rdfs:comment ""^^xsd:string .
-
-skiros:ScanPrimitive a owl:class ;
-    rdfs:subClassOf skiros:HelloSkills .
-
-skiros:ScanPrimitive-9 a skiros:ScanPrimitive,
-        owl:NamedIndividual ;
-    rdfs:label "scan_primitive" ;
-    skiros:hasParam skiros:Parameter-10,
-        skiros:Parameter-11 ;
-    skiros:hasPostCondition skiros:ConditionGenerate-12,
-        skiros:ConditionHasProperty-13 .
 
 skiros:Skiros2HelloLib a owl:class ;
     rdfs:subClassOf skiros:Skill .
@@ -171,13 +228,33 @@ skiros:Skiros2StdSkills a owl:class ;
 skiros:TaskPlan a owl:class ;
     rdfs:subClassOf skiros:TaskPlanner .
 
-skiros:TaskPlan-23 a skiros:TaskPlan,
+skiros:TaskPlan-36 a skiros:TaskPlan,
         owl:NamedIndividual ;
     rdfs:label "task_plan" ;
-    skiros:hasParam skiros:Parameter-24 .
+    skiros:hasParam skiros:Parameter-37 .
 
 skiros:TaskPlanner a owl:class ;
     rdfs:subClassOf skiros:Skiros2StdSkills .
+
+skiros:TransformationPose-46 a skiros:TransformationPose,
+
+        owl:NamedIndividual ;
+
+    rdfs:label "" ;
+
+    skiros:BaseFrameId ""^^xsd:string ;
+
+    skiros:DiscreteReasoner "AauSpatialReasoner"^^xsd:string ;
+
+    skiros:FrameId "skiros:TransformationPose-46"^^xsd:string ;
+
+    skiros:PositionX "0.0"^^xsd:float ;
+
+    skiros:PositionY "0.0"^^xsd:float ;
+
+    skiros:PositionZ "0.0"^^xsd:float ;
+
+    skiros:PublishTf true .
 
 cora:Robot-1 a cora:Robot,
         owl:NamedIndividual ;
@@ -190,9 +267,9 @@ cora:Robot-1 a cora:Robot,
     skiros:SkillMgr "test_bot_robot"^^xsd:string ;
     skiros:Template "test_bot:test_bot_robot"^^xsd:string ;
     skiros:at skiros:Location-17 ;
-    skiros:hasSkill skiros:Drive-14,
-        skiros:ScanPrimitive-9,
-        skiros:TaskPlan-23 ;
+    skiros:hasSkill skiros:Drive-26,
+        skiros:Look-15,
+        skiros:TaskPlan-36 ;
     skiros:hasTemplate test_bot:test_bot_robot .
 
 skiros:Location-17 a skiros:Location,

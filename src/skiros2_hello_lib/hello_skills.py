@@ -11,7 +11,7 @@ import rospy
 class ScanPrimitive(SkillDescription):
     def createDescription(self):
         self.addParam("TargetLoc", Element("skiros:Location"), ParamTypes.Required)
-        self.addParam("TargetPose", Element("skiros:TransformationPose"), ParamTypes.Optional)
+        self.addParam("TargetPose", Element("skiros:TransformationPose"), ParamTypes.Required)
 
 class MovePrimitive(SkillDescription):
     def createDescription(self):
@@ -21,8 +21,10 @@ class MovePrimitive(SkillDescription):
 class Look(SkillDescription):
     def createDescription(self):
         self.addParam("TargetLoc", Element("skiros:Location"), ParamTypes.Required)
-        self.addParam("TargetPose", Element("skiros:TransformationPose"), ParamTypes.Optional)
-        self.addPostCondition(self.getHasPropCond("HasPositionX", "skiros:PositionX", "TargetPose", True))
+        self.addParam("TargetPose", Element("skiros:TransformationPose"), ParamTypes.Required)
+        self.addParam("ParentScene", Element("skiros:Scene"), ParamTypes.Required)
+        self.addPreCondition(self.getRelationCond("SceneHasTarget", "skiros:contain", "ParentScene", "TargetLoc", True))
+        self.addPostCondition(self.getHasPropCond("HasPositionXPost", "skiros:PositionX", "TargetPose", True))
         self.addPostCondition(self.getRelationCond("TargetPoseAtLocPost", "skiros:at", "TargetPose", "TargetLoc", True))
 
 class Drive(SkillDescription):
@@ -32,7 +34,7 @@ class Drive(SkillDescription):
         self.addParam("TargetPose", Element("skiros:TransformationPose"), ParamTypes.Required)
         self.addParam("TargetLoc", Element("skiros:Location"), ParamTypes.Required)
         self.addPreCondition(self.getRelationCond("RobotAtPre", "skiros:at", "Robot", "StartLocation", True))
-        self.addPreCondition(self.getPropCond("TargetExists", "skiros:PositionX", "TargetPose", "=", 5.0, True))
+        self.addPreCondition(self.getHasPropCond("HasPositionXPre", "skiros:PositionX", "TargetPose", True))
         self.addPreCondition(self.getRelationCond("TargetPoseAtLocPre", "skiros:at", "TargetPose", "TargetLoc", True))
         self.addPostCondition(self.getRelationCond("NoRobotAt", "skiros:at", "Robot", "StartLocation", False))
         self.addPostCondition(self.getRelationCond("RobotAtPost", "skiros:at", "Robot", "TargetLoc", True))
@@ -68,7 +70,7 @@ class scan_primitive(PrimitiveBase):
         else:
             pose = self.params["TargetPose"].value
             pose.setData(":Position", [5.0 , 0.0, 0.0])
-            self.wmi.add_element(pose)
+            self.params["TargetPose"].value = pose
             return self.success("Done")
 
     def onEnd(self):
