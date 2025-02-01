@@ -70,7 +70,7 @@ class scan_primitive(PrimitiveBase):
         else:
             pose = self.params["TargetPose"].value
             pose.setData(":Position", [5.0 , 0.0, 0.0])
-            self.params["TargetPose"].value = pose
+            self.wmi.update_element(pose)
             return self.success("Done")
 
     def onEnd(self):
@@ -108,7 +108,7 @@ class move_primitive(PrimitiveBase):
         if bot_pos != target_pos:
             rospy.loginfo("Changing")
             bot.setData(":Position", [self.pos, 0.0, 0.0])
-            self.params["Robot"].value = bot
+            self.wmi.update_element(bot)
             return self.step("Step")
         else:
             return self.success("Done")
